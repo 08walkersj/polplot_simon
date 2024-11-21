@@ -47,8 +47,8 @@ d2r = np.pi / 180
 
 datapath = os.path.dirname(os.path.abspath(__file__)) + '/data/'
 
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Verdana']})
-rc('text', usetex=True)
+# rc('font', **{'family': 'sans-serif', 'sans-serif': ['Verdana']})
+# rc('text', usetex=True)
 
 class Polarplot(object):
     def __init__(self, ax, minlat = 50, plotgrid = True, sector = 'all', lt_label='lt', lat_label='lat', **kwargs):
@@ -347,8 +347,14 @@ class Polarplot(object):
         -----
         The function internally calls `self.text` method to generate each label. 
         """
-
-        label_params = {'rotation': rotation, 'color': color, 'backgroundcolor': backgroundcolor, 'zorder': zorder}
+        if 'alpha' in kwargs:
+            alpha= kwargs['alpha']
+        else:
+            alpha= 1
+        bbox= {'facecolor':backgroundcolor, 'edgecolor':'none', 'alpha':alpha, 'zorder':zorder}
+        if 'bbox' in kwargs:
+            bbox.update(kwargs.pop('bbox'))
+        label_params = {'rotation': rotation, 'color': color, 'bbox':bbox}
         label_params.update(kwargs)
 
         labels = []
@@ -1126,7 +1132,7 @@ class Polarplot(object):
                 A string that combines both original and transformed coordinates.
             """
             transformed_coord = self._xy2latlt(x, y)
-            lat, lt = transformed_coord[::-1]
+            lat, lt = transformed_coord
             lat = lat[0] if isinstance(lat, np.ndarray) else lat
             lt = lt[0] if isinstance(lt, np.ndarray) else lt
             string_original = f'x={x:.2f}, y={y:.2f}'
